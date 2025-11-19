@@ -21,6 +21,16 @@ serve(async (req) => {
       );
     }
 
+    // Validate image URL to prevent SSRF attacks
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    if (!supabaseUrl || !imageUrl.startsWith(`${supabaseUrl}/storage/v1/object/public/plant-images/`)) {
+      console.error('Invalid image URL:', imageUrl);
+      return new Response(
+        JSON.stringify({ error: 'Invalid image URL. Only images from the plant-images storage bucket are allowed.' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
       console.error('LOVABLE_API_KEY not configured');

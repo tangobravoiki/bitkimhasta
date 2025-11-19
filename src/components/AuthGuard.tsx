@@ -33,7 +33,13 @@ export const AuthGuard = ({ children }: { children: React.ReactNode }) => {
     
     try {
       if (isSignUp) {
-        const { error } = await supabase.auth.signUp({ email, password });
+        const { error } = await supabase.auth.signUp({ 
+          email, 
+          password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/`
+          }
+        });
         if (error) throw error;
         toast({ title: 'Kayıt başarılı', description: 'Giriş yapabilirsiniz' });
       } else {
